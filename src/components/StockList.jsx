@@ -2,10 +2,14 @@ import React from "react";
 import { useEffect, useState } from "react";
 import finnHub from "../apis/finnHub";
 import { BiCaretUp, BiCaretDown } from "react-icons/bi";
+import { useGlobalWatchListContext } from "../context/watchListContext";
+import { useNavigate } from "react-router-dom";
 
 const StockList = () => {
   const [stonk, setStonk] = useState([]);
-  const [watchList, setWatchList] = useState(["TSLA", "AAPL", "NFLX"]);
+  const navigate = useNavigate();
+
+  const { watchList } = useGlobalWatchListContext();
 
   const changeColour = (value) => {
     return value < 0 ? "danger" : "success";
@@ -34,13 +38,17 @@ const StockList = () => {
     }
   };
 
+  const handleStonkSelect = (ticker) => {
+    navigate(`detail/${ticker}`);
+  };
+
   useEffect(() => {
     let isMounted = true;
 
     fetchData(isMounted);
 
     return () => (isMounted = false);
-  }, []);
+  }, [watchList]);
 
   return (
     <table className="table hover mt-5">
@@ -58,7 +66,12 @@ const StockList = () => {
       </thead>
       <tbody>
         {stonk.map((stonkData) => (
-          <tr className="table-row" key={stonkData.symbol}>
+          <tr
+            className="table-row"
+            key={stonkData.symbol}
+            style={{ cursor: "pointer" }}
+            onClick={() => handleStonkSelect(stonkData.symbol)}
+          >
             <th scope="row">{stonkData.symbol}</th>
             <td>{stonkData.data.c}</td>
             <td className={`text-${changeColour(stonkData.data.d)}`}>
