@@ -1,39 +1,63 @@
-import React from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import finnHub from "../apis/finnHub";
+import StonkChart from "../components/StonkChart";
+
+const formatData = (data) =>
+  data.t.map((el, index) => ({ x: el * 1000, y: Math.floor(data.c[index]) }));
 
 const StockDetailPage = () => {
   const { symbol } = useParams();
+  const [chartData, setChartData] = useState();
+
+  const getChartData = (res, start, end) =>
+    finnHub.get("/stock/candle", {
+      params: { symbol, resolution: res, from: start, to: end },
+    });
 
   const fetchData = async () => {
-    const resolution = 30;
     const date = new Date();
-    const to = Math.floor(
+    const currentTime = Math.floor(
       date.getTime() / 1000
-    ); /* convert time in ms to seconds for API */
+    ); /* convert time in 'ms' to 's' for FinnHub API */
     let oneDay;
     if (date.getDay() === 6) {
-      oneDay = to - 60 * 60 * 24 * 2;
+      oneDay = currentTime - 60 * 60 * 24 * 2;
     } else if (date.getDay() === 0) {
-      oneDay = to - 60 * 60 * 24 * 3;
+      oneDay = currentTime - 60 * 60 * 24 * 3;
     } else {
-      oneDay = to - 60 * 60 * 24;
+      oneDay = currentTime - 60 * 60 * 24;
     }
-    const oneWeek = to - 60 * 60 * 24 * 7;
-    const oneYear = to - 60 * 60 * 24 * 365;
+    const oneWeek = currentTime - 60 * 60 * 24 * 7;
+    const oneYear = currentTime - 60 * 60 * 24 * 365;
 
-    const response = await finnHub.get("/stock/candle", {
-      params: { symbol, resolution, to, from },
-    });
-    console.log(response);
+    try {
+      const responses = await Promise.all([
+        getChartData(30, oneDay, currentTime),
+        getChartData(60, oneWeek, currentTime),
+        getChartData("W", oneYear, currentTime),
+      ]);
+
+      setChartData({
+        day: formatData(responses[0].data),
+        week: formatData(responses[1].data),
+        year: formatData(responses[2].data),
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [symbol]);
 
-  return <div>StockDetailPage</div>;
+  return (
+    <div>
+      {chartData && <StonkChart chartData={chartData} symbol={symbol} />}
+    </div>
+  );
 };
 
 export default StockDetailPage;

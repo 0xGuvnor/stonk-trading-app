@@ -85,7 +85,12 @@ const StockList = () => {
             <td>{stonkData.data.h}</td>
             <td>{stonkData.data.l}</td>
             <td>{stonkData.data.o}</td>
-            <td>{stonkData.data.pc}</td>
+            <td>
+              {stonkData.data.pc}{" "}
+              <button className="btn btn-danger btn-sm ml-3 d-inline-block delete-button">
+                Remove
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>
