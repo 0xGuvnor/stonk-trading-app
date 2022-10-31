@@ -7,7 +7,7 @@ const StockOverviewPage = () => {
   return (
     <div>
       <div className="text-center">
-        <img src={Stonks} width={300} />
+        <img src={Stonks} width={300} alt="stonks logo" />
       </div>
       <Autocomplete />
       <StockList />
