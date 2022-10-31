@@ -1,11 +1,14 @@
 import React from "react";
 import Autocomplete from "../components/Autocomplete";
 import StockList from "../components/StockList";
+import Stonks from "../images/Stonks.avif";
 
 const StockOverviewPage = () => {
   return (
     <div>
-      StockOverviewPage
+      <div className="text-center">
+        <img src={Stonks} width={300} />
+      </div>
       <Autocomplete />
       <StockList />
     </div>

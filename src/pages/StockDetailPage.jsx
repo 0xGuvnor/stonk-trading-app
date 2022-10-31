@@ -3,9 +3,13 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import finnHub from "../apis/finnHub";
 import StonkChart from "../components/StonkChart";
+import StonkData from "../components/StonkData";
 
 const formatData = (data) =>
-  data.t.map((el, index) => ({ x: el * 1000, y: Math.floor(data.c[index]) }));
+  data.t.map((el, index) => ({
+    x: el * 1000,
+    y: Math.round(data.c[index] * 100) / 100,
+  }));
 
 const StockDetailPage = () => {
   const { symbol } = useParams();
@@ -55,7 +59,12 @@ const StockDetailPage = () => {
 
   return (
     <div>
-      {chartData && <StonkChart chartData={chartData} symbol={symbol} />}
+      {chartData && (
+        <div>
+          <StonkChart chartData={chartData} symbol={symbol} />
+          <StonkData symbol={symbol} />
+        </div>
+      )}
     </div>
   );
 };

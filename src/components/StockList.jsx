@@ -7,9 +7,8 @@ import { useNavigate } from "react-router-dom";
 
 const StockList = () => {
   const [stonk, setStonk] = useState([]);
+  const { watchList, deleteStonk } = useGlobalWatchListContext();
   const navigate = useNavigate();
-
-  const { watchList } = useGlobalWatchListContext();
 
   const changeColour = (value) => {
     return value < 0 ? "danger" : "success";
@@ -87,7 +86,13 @@ const StockList = () => {
             <td>{stonkData.data.o}</td>
             <td>
               {stonkData.data.pc}{" "}
-              <button className="btn btn-danger btn-sm ml-3 d-inline-block delete-button">
+              <button
+                className="btn btn-danger btn-sm ml-3 d-inline-block delete-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteStonk(stonkData.symbol);
+                }}
+              >
                 Remove
               </button>
             </td>
